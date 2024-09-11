@@ -1,0 +1,2 @@
+CUSTOMER = "customer"
+DEPOT = "depot"
