@@ -22,9 +22,6 @@ def sample_accidents(current_time):
     accident_rate = 0.0005 + (0.001 - 0.0005) * np.exp(-((current_time - 1260) ** 2) / (2 * 120 ** 2)) # Peak at 9 PM (21:00)
     return np.random.poisson(lam=accident_rate) # Sample the number of accidents using a Poisson distribution with the calculated rate
 
-def accident_delay():
-    return random.uniform(0.5, 2)
-
 def calculate_delay(distance, current_time):
     time_fac = time_factor(current_time)
     distance_factor = 1 - math.exp(-distance / 50)
@@ -33,7 +30,12 @@ def calculate_delay(distance, current_time):
     delay = base_delay * rand_factor
     
     # Accidents are sampled following poisson distribution with zero-near mean, which slightly increases at 9pm
-    delay += sample_accidents(current_time)*accident_delay()
+    num_accidents = sample_accidents(current_time)
+    accident_delay = 0
+    if num_accidents > 0:
+        durations = np.random.uniform(30, 120, size=num_accidents)
+        accident_delay = np.sum(durations)  # Total time of all accidents
+    delay += accident_delay
     
     return delay
 
