@@ -19,7 +19,9 @@ def random_factor(current_time):
     return random.lognormvariate(mu, sigma)
 
 def sample_accidents(current_time):
-    accident_rate = 0.0005 + (0.001 - 0.0005) * np.exp(-((current_time - 1260) ** 2) / (2 * 120 ** 2)) # Peak at 9 PM (21:00)
+    accident_rate = 0.05 * normal_distribution(current_time, 1260, 120) # Peak at 9 PM (21:00)
+    if accident_rate < 0:
+        accident_rate = 0
     return np.random.poisson(lam=accident_rate) # Sample the number of accidents using a Poisson distribution with the calculated rate
 
 def calculate_delay(distance, current_time):
