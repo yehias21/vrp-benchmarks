@@ -2,6 +2,7 @@ import math
 import random
 from datetime import datetime, time
 from city import Map
+import numpy as np
 
 def normal_distribution(x, mean, std_dev):
     return math.exp(-((x - mean) ** 2) / (2 * std_dev ** 2)) / (std_dev * math.sqrt(2 * math.pi))
@@ -17,8 +18,9 @@ def random_factor(current_time):
     sigma = 0.3 + 0.2 * rush_hour_effect
     return random.lognormvariate(mu, sigma)
 
-def accident_probability(current_time):
-    return 0.05 * normal_distribution(current_time, 1260, 120)  # Peak at 9 PM (21:00)
+def sample_accidents(current_time):
+    accident_rate = 0.0005 + (0.001 - 0.0005) * np.exp(-((current_time - 1260) ** 2) / (2 * 120 ** 2)) # Peak at 9 PM (21:00)
+    return np.random.poisson(lam=accident_rate) # Sample the number of accidents using a Poisson distribution with the calculated rate
 
 def accident_delay():
     return random.uniform(0.5, 2)
@@ -30,9 +32,8 @@ def calculate_delay(distance, current_time):
     rand_factor = random_factor(current_time)
     delay = base_delay * rand_factor
     
-    # Check for accident
-    if random.random() < accident_probability(current_time):
-        delay += accident_delay()
+    # Accidents are sampled following poisson distribution with zero-near mean, which slightly increases at 9pm
+    delay += sample_accidents(current_time)*accident_delay()
     
     return delay
 
