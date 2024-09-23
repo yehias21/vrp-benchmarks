@@ -18,8 +18,8 @@ def sample_time_window(customer_type, customer_appearance_time):
     business_peak = 13 * 60  # 1:00 PM for commercial
     
     # Delivery day constraints
-    delivery_day_start = 7 * 60   # 7:00 AM
-    delivery_day_end = 24 * 60    # 9:00 PM (21:00)
+    delivery_day_start = 0 * 60   # 0:00 AM
+    delivery_day_end = 24 * 60    # 0:00 AM (next day)
     # Delivery day can't be earlier than dynamic customer appearance time 
     delivery_day_start = max(delivery_day_start, customer_appearance_time)
     
@@ -31,12 +31,12 @@ def sample_time_window(customer_type, customer_appearance_time):
         else:
             # Evening window: sample starting time from a normal distribution around 7 PM
             start_time = np.random.normal(loc=evening_peak, scale=120)
-        
-        # Ensure start time is within delivery hours
-        start_time = max(delivery_day_start, min(start_time, delivery_day_end - 60))
-        
+
         # Residential customers usually accept longer windows, sample integer length
         window_length = int(np.random.uniform(1, 3)) * 60  # Length in integer hours (1 to 3 hours)
+        
+        # Ensure start time is within delivery hours
+        start_time = max(delivery_day_start, min(start_time, delivery_day_end - window_length))
     
     elif customer_type == 1:
         # Commercial customers: Normal distribution around 1 PM
