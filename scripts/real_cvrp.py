@@ -1,75 +1,69 @@
+import os
+from typing import Dict, Optional
+
 import numpy as np
-from typing import List, Tuple
 from tqdm import tqdm
-from city import Map, map_drawer, Location
-from constants import DEPOT
+
+from common import (
+    generate_base_instance,
+    save_dataset,
+    load_dataset,
+    visualize_instance,
+)
+from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE
 
 
-# TODO: put map_size, vehicle_capacity, demand_range in settings file
 def generate_cvrp_instance(
     num_customers: int,
-    map_size: Tuple[int, int] = (100, 100),
-    num_cities: int = 3,
+    num_cities: Optional[int] = None,
     num_depots: int = 1,
-    vehicle_capacity: int = 100,
-    demand_range: Tuple[int, int] = (1, 10),
-) -> dict:
-    map_instance = Map(map_size, num_cities, num_depots)
-    locations = map_instance.sample_locations(num_customers)
-    depot = next(loc for loc in locations if loc.type == DEPOT)
-    locations.remove(depot)
-    locations.insert(0, depot)
-    demands = np.random.randint(
-        demand_range[0], demand_range[1] + 1, size=num_customers
+    is_dynamic: bool = False,
+) -> Dict:
+    num_cities = num_cities if num_cities else max(1, num_customers // 50)
+    instance = generate_base_instance(
+        num_customers, MAP_SIZE, num_cities, num_depots, DEMAND_RANGE, is_dynamic
     )
-    demands[0] = 0  # Depot has no demand
-
-    return {
-        "locations": np.array([(loc.x, loc.y) for loc in locations]),
-        "demands": demands,
-        "vehicle_capacity": vehicle_capacity,
-    }
+    return instance
 
 
 def generate_cvrp_dataset(
     num_customers: int,
-    num_instances: int = 1000,
-    map_size: Tuple[int, int] = (100, 100),
-    num_cities: int = 3,
+    num_cities: Optional[int] = None,
     num_depots: int = 1,
-    vehicle_capacity: int = 100,
-    demand_range: Tuple[int, int] = (1, 10),
-) -> dict:
+    precision=np.uint16,
+    is_dynamic: bool = False,
+) -> Dict:
+    num_cities = num_cities if num_cities else max(1, num_customers // 50)
     dataset = {
         "locations": [],
         "demands": [],
         "vehicle_capacities": [],
+        "map_size": MAP_SIZE,
+        "num_cities": num_cities,
+        "num_depots": num_depots,
     }
 
     for _ in tqdm(
-        range(num_instances), desc=f"Generating {num_customers} customer instances"
+        range(NUM_INSTANCES), desc=f"Generating {num_customers} customer instances"
     ):
         instance = generate_cvrp_instance(
             num_customers,
-            map_size,
             num_cities,
             num_depots,
-            vehicle_capacity,
-            demand_range,
+            is_dynamic=is_dynamic,
         )
-        dataset["locations"].append(instance["locations"])
-        dataset["demands"].append(instance["demands"])
+        dataset["locations"].append(instance["locations"].astype(precision))
+        dataset["demands"].append(instance["demands"].astype(precision))
         dataset["vehicle_capacities"].append(instance["vehicle_capacity"])
+        if is_dynamic:
+            dataset["appear_times"].append(instance["appear_time"])
 
     return {k: np.array(v) for k, v in dataset.items()}
 
 
-def save_dataset(dataset: dict, filename: str):
-    np.savez_compressed(filename, **dataset)
-
-
 def main():
     customer_counts = [10, 20, 50, 100, 200, 500, 1000]
+    os.makedirs("data/real_cvrp", exist_ok=True)
 
     for num_customers in tqdm(customer_counts):
         dataset = generate_cvrp_dataset(num_customers)
@@ -77,13 +71,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
-    gen_path = "data/real_cvrp/cvrp_10.npz"
-    data = np.load(gen_path)
-    locations = data["locations"]
-    locations = locations[1]
-    locations = [Location(loc[0], loc[1]) for loc in locations]
-    map = Map((100, 100), 1, 1)
-    map.locations = locations
-    img = map_drawer(map)
-    img.show()
+    main()
+    dataset = load_dataset("data/real_cvrp/cvrp_10.npz")
+    visualize_instance(dataset)
