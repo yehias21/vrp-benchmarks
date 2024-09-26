@@ -37,7 +37,9 @@ def generate_cvrp_dataset(
     dataset = {
         "locations": [],
         "demands": [],
+        "num_vehicles": [],
         "vehicle_capacities": [],
+        "appear_times": [],
         "map_size": MAP_SIZE,
         "num_cities": num_cities,
         "num_depots": num_depots,
@@ -55,8 +57,8 @@ def generate_cvrp_dataset(
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
         dataset["vehicle_capacities"].append(instance["vehicle_capacity"])
-        if is_dynamic:
-            dataset["appear_times"].append(instance["appear_time"])
+        dataset["appear_times"].append(instance["appear_time"])
+        dataset["num_vehicles"].append(1)
 
     return {k: np.array(v) for k, v in dataset.items()}
 

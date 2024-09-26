@@ -41,11 +41,12 @@ def generate_twcvrp_instance(
                 travel_times[(i, j)] = sample_travel_time(i, j, distances, current_time)
             else:
                 travel_times[(i, j)] = 0
-    time_windows = [
-        generate_time_window(instance["appear_time"][i]) for i in range(num_customers)
-    ]
-    time_windows.insert(0, (0, 1440))  # Depot time window
 
+    time_windows = [
+        generate_time_window(instance["appear_time"][i])
+        for i in range(num_customers + num_depots)
+    ]
+    time_windows[0] = (0, 1440)  # Depot has no time window
     instance["travel_times"] = travel_times
     instance["time_windows"] = np.array(time_windows)
 
@@ -65,6 +66,8 @@ def generate_twcvrp_dataset(
         "demands": [],
         "travel_times": [],
         "time_windows": [],
+        "appear_times": [],
+        "vehicles_capacities": [],
         "map_size": MAP_SIZE,
         "num_cities": num_cities,
         "num_depots": num_depots,
@@ -77,13 +80,13 @@ def generate_twcvrp_dataset(
         )
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
+        dataset["vehicles_capacities"].append(instance["vehicle_capacity"])
         instance["travel_times"] = {
             k: round(v, 2) for k, v in instance["travel_times"].items()
         }
         dataset["travel_times"].append(instance["travel_times"])
         dataset["time_windows"].append(instance["time_windows"].astype(precision))
-        if is_dynamic:
-            dataset["appear_times"].append(instance["appear_time"])
+        dataset["appear_times"].append(instance["appear_time"])
 
     return {k: np.array(v) for k, v in dataset.items()}
 
