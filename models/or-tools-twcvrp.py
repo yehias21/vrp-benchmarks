@@ -45,6 +45,18 @@ def solve_twcvrp(data):
             data["time_windows"][depot_idx][0], data["time_windows"][depot_idx][1]
         )
 
+    def demand_callback(from_index):
+        from_node = manager.IndexToNode(from_index)
+        return data["demands"][from_node]
+
+    demand_callback_index = routing.RegisterUnaryTransitCallback(demand_callback)
+    routing.AddDimensionWithVehicleCapacity(
+        evaluator_index=demand_callback_index,
+        slack_max=0,
+        vehicle_capacities=data["vehicle_capacities"],
+        fix_start_cumul_to_zero=True,
+        name="Capacity",
+    )
     # Instantiate route start and end times to produce feasible times.
     for i in range(data["num_vehicles"]):
         routing.AddVariableMinimizedByFinalizer(
@@ -115,6 +127,9 @@ def main():
             "demands": dataset["demands"][i],
             "time_matrix": get_time_matrix(num_customers, dataset["travel_times"][i]),
             "time_windows": dataset["time_windows"][i].tolist(),
+            "vehicle_capacities": [
+                dataset["vehicle_capacities"][i].item() for _ in range(1)
+            ],
         }
         for i in range(num_instances)
     ]

@@ -67,7 +67,7 @@ def generate_twcvrp_dataset(
         "travel_times": [],
         "time_windows": [],
         "appear_times": [],
-        "vehicles_capacities": [],
+        "vehicle_capacities": [],
         "map_size": MAP_SIZE,
         "num_cities": num_cities,
         "num_depots": num_depots,
@@ -80,7 +80,7 @@ def generate_twcvrp_dataset(
         )
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
-        dataset["vehicles_capacities"].append(instance["vehicle_capacity"])
+        dataset["vehicle_capacities"].append(instance["vehicle_capacity"])
         instance["travel_times"] = {
             k: round(v, 2) for k, v in instance["travel_times"].items()
         }
