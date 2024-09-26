@@ -14,11 +14,10 @@ def generate_base_instance(
     is_dynamic: bool = False,
 ) -> Dict:
     map_instance = Map(map_size, num_cities, num_depots)
-    locations = map_instance.sample_locations(num_customers + num_depots)
-
-    # Ensure depot is at index 0
+    locations = map_instance.sample_locations(num_customers)
     depot = next(loc for loc in locations if loc.type == DEPOT)
-    locations.remove(depot)
+    depot_index = locations.index(depot)
+    locations.pop(depot_index)
     locations.insert(0, depot)
 
     demands = np.random.randint(
@@ -30,7 +29,7 @@ def generate_base_instance(
         num_dynamic_customers = int(num_customers * DYNAMIC_PERCENTAGE)
         dynamic_customers = random.sample(range(num_customers), num_dynamic_customers)
 
-        for i in range(num_customers):
+        for i in range(num_customers + num_depots):
             if i in dynamic_customers:
                 appear_time.append(random.uniform(0, 1440))
             else:
