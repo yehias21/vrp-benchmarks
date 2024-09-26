@@ -12,15 +12,12 @@ from common import (
     load_dataset,
     visualize_instance,
 )
+from time_windows_generator import sample_time_window
 from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE
 
 
-def generate_time_window(earliest_time: int, latest_time: int) -> Tuple[int, int]:
-    start = random.randint(
-        earliest_time, latest_time - 60
-    )  # At least 60 minutes window
-    end = random.randint(start + 60, latest_time)
-    return start, end
+def generate_time_window(customer_appear_time: int) -> Tuple[int, int]:
+    return sample_time_window(random.randint(0, 1), customer_appear_time)
 
 
 def generate_twcvrp_instance(
@@ -33,9 +30,7 @@ def generate_twcvrp_instance(
     instance = generate_base_instance(
         num_customers, MAP_SIZE, num_cities, num_depots, DEMAND_RANGE, is_dynamic
     )
-
     distances = get_distances(instance["map_instance"])
-
     travel_times = {}
     for i in range(len(instance["locations"])):
         for j in range(len(instance["locations"])):
@@ -46,10 +41,10 @@ def generate_twcvrp_instance(
                 travel_times[(i, j)] = sample_travel_time(i, j, distances, current_time)
             else:
                 travel_times[(i, j)] = 0
-
     time_windows = [
-        generate_time_window(0, 1440) for _ in range(num_customers + num_depots)
+        generate_time_window(instance["appear_time"][i]) for i in range(num_customers)
     ]
+    time_windows.insert(0, (0, 1440))  # Depot time window
 
     instance["travel_times"] = travel_times
     instance["time_windows"] = np.array(time_windows)

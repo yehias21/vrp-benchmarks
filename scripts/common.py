@@ -35,6 +35,8 @@ def generate_base_instance(
                 appear_time.append(random.uniform(0, 1440))
             else:
                 appear_time.append(0)
+    else:
+        appear_time = [0] * (num_customers + num_depots)
 
     return {
         "locations": np.array([(loc.x, loc.y) for loc in locations]),
