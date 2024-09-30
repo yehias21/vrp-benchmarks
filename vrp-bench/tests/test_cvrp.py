@@ -1,10 +1,20 @@
+import pytest
 from real_cvrp import generate_cvrp_dataset
+from constants import NUM_INSTANCES
 
 
-def test_dataset_format():
+@pytest.mark.parametrize(
+    "num_vehicles,num_customers",
+    [
+        (1, 10),
+        (1, 20),
+        (2, 10),
+        (2, 20),
+    ],
+)
+def test_dataset_format(num_vehicles, num_customers):
     num_customers = 10
-    dataset = generate_cvrp_dataset(num_customers)
-    num_instances = len(dataset["locations"])
+    dataset = generate_cvrp_dataset(num_customers, num_vehicles=num_vehicles)
     num_depots = 1
     to_check = [
         "locations",
@@ -17,9 +27,9 @@ def test_dataset_format():
     for c in to_check:
         assert c in dataset.keys(), f"{c} not found in dataset keys"
 
-    assert dataset["locations"].shape == (num_instances, num_customers + num_depots, 2)
-    assert dataset["demands"].shape == (num_instances, num_customers + num_depots)
-    assert dataset["num_vehicles"].shape == (num_instances,)
+    assert dataset["locations"].shape == (NUM_INSTANCES, num_customers + num_depots, 2)
+    assert dataset["demands"].shape == (NUM_INSTANCES, num_customers + num_depots)
+    assert dataset["num_vehicles"].shape == (NUM_INSTANCES,)
     assert dataset["num_depots"] == num_depots
-    assert dataset["vehicle_capacities"].shape == (num_instances,)
-    assert dataset["appear_times"].shape == (num_instances, num_customers + num_depots)
+    assert dataset["vehicle_capacities"].shape == (NUM_INSTANCES, num_vehicles)
+    assert dataset["appear_times"].shape == (NUM_INSTANCES, num_customers + num_depots)

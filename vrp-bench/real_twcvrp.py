@@ -28,7 +28,12 @@ def generate_twcvrp_instance(
 ) -> Dict:
     num_cities = num_cities if num_cities else max(1, num_customers // 50)
     instance = generate_base_instance(
-        num_customers, MAP_SIZE, num_cities, num_depots, DEMAND_RANGE, is_dynamic
+        num_customers,
+        MAP_SIZE,
+        num_cities,
+        num_depots,
+        DEMAND_RANGE,
+        is_dynamic,
     )
     distances = get_distances(instance["map_instance"])
     travel_times = {}
@@ -67,6 +72,7 @@ def generate_twcvrp_dataset(
     num_customers: int,
     num_cities: Optional[int] = None,
     num_depots: int = 1,
+    num_vehicles: int = 1,
     precision=np.uint16,
     is_dynamic: bool = False,
 ) -> Dict:
@@ -91,7 +97,9 @@ def generate_twcvrp_dataset(
         )
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
-        dataset["vehicle_capacities"].append(instance["vehicle_capacity"])
+        dataset["vehicle_capacities"].append(
+            [instance["vehicle_capacity"]] * num_vehicles
+        )
         instance["travel_times"] = {
             k: round(v, 2) for k, v in instance["travel_times"].items()
         }
@@ -102,14 +110,13 @@ def generate_twcvrp_dataset(
         dataset["time_matrix"].append(time_matrix)
         dataset["time_windows"].append(instance["time_windows"].astype(precision))
         dataset["appear_times"].append(instance["appear_time"])
-        dataset["num_vehicles"].append(1)
+        dataset["num_vehicles"].append(num_vehicles)
 
     return {k: np.array(v) for k, v in dataset.items()}
 
 
 def main():
-    # customer_counts = [10, 20, 50, 100, 200, 500, 1000]
-    customer_counts = [10]
+    customer_counts = [10, 20, 50, 100, 200, 500, 1000]
     os.makedirs("data/real_twcvrp", exist_ok=True)
     for num_customers in tqdm(customer_counts):
         dataset = generate_twcvrp_dataset(num_customers)

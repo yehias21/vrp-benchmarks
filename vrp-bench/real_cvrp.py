@@ -30,6 +30,7 @@ def generate_cvrp_dataset(
     num_customers: int,
     num_cities: Optional[int] = None,
     num_depots: int = 1,
+    num_vehicles: int = 1,
     precision=np.uint16,
     is_dynamic: bool = False,
 ) -> Dict:
@@ -56,7 +57,9 @@ def generate_cvrp_dataset(
         )
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
-        dataset["vehicle_capacities"].append(instance["vehicle_capacity"])
+        dataset["vehicle_capacities"].append(
+            [instance["vehicle_capacity"]] * num_vehicles
+        )
         dataset["appear_times"].append(instance["appear_time"])
         dataset["num_vehicles"].append(1)
 
