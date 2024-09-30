@@ -53,6 +53,16 @@ def generate_twcvrp_instance(
     return instance
 
 
+def get_time_matrix(num_customers, travel_times) -> list:
+    matrix_keys = sorted(list(travel_times.keys()))
+    time_matrix = []
+    for k in matrix_keys:
+        time_matrix.append(travel_times[k])
+    time_matrix = np.array(time_matrix, dtype=np.uint16)
+    time_matrix = time_matrix.reshape(num_customers, num_customers)
+    return time_matrix.tolist()
+
+
 def generate_twcvrp_dataset(
     num_customers: int,
     num_cities: Optional[int] = None,
@@ -62,9 +72,10 @@ def generate_twcvrp_dataset(
 ) -> Dict:
     num_cities = num_cities if num_cities else max(1, num_customers // 50)
     dataset = {
+        "num_vehicles": [],
         "locations": [],
         "demands": [],
-        "travel_times": [],
+        "time_matrix": [],
         "time_windows": [],
         "appear_times": [],
         "vehicle_capacities": [],
@@ -84,15 +95,21 @@ def generate_twcvrp_dataset(
         instance["travel_times"] = {
             k: round(v, 2) for k, v in instance["travel_times"].items()
         }
-        dataset["travel_times"].append(instance["travel_times"])
+        time_matrix = get_time_matrix(
+            num_customers + num_depots, instance["travel_times"]
+        )
+        time_matrix = np.array(time_matrix, dtype=np.uint16)
+        dataset["time_matrix"].append(time_matrix)
         dataset["time_windows"].append(instance["time_windows"].astype(precision))
         dataset["appear_times"].append(instance["appear_time"])
+        dataset["num_vehicles"].append(1)
 
     return {k: np.array(v) for k, v in dataset.items()}
 
 
 def main():
-    customer_counts = [10, 20, 50, 100, 200, 500, 1000]
+    # customer_counts = [10, 20, 50, 100, 200, 500, 1000]
+    customer_counts = [10]
     os.makedirs("data/real_twcvrp", exist_ok=True)
     for num_customers in tqdm(customer_counts):
         dataset = generate_twcvrp_dataset(num_customers)
