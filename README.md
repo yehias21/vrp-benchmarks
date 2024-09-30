@@ -1,4 +1,6 @@
-# vrp-benchmarks
+![CI](https://github.com/ahmedheakl/vrp-benchmarks/workflows/test/badge.svg)
+
+# VRP-Bench
 Benchmarks datasets for VRP with various constraints.
 
 | Model    | CVRP10 | CVRP20 | CVRP50 | CVRP100 | CVRP200 | CVRP500 | CVRP1000 |
