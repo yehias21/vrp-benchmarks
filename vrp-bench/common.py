@@ -56,9 +56,13 @@ def visualize_instance(dataset: Dict, index: int = 0):
     from city import map_drawer
 
     locations = dataset["locations"][index]
+    num_depots = dataset["num_depots"]
     map_instance = Map(
         dataset["map_size"], dataset["num_cities"], dataset["num_depots"]
     )
     map_instance.locations = [Location(loc[0], loc[1]) for loc in locations]
+    map_instance.depots = [
+        Location(loc[0], loc[1], DEPOT) for loc in locations[:num_depots]
+    ]
     img = map_drawer(map_instance)
     img.show()

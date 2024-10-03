@@ -13,7 +13,7 @@ from common import (
     visualize_instance,
 )
 from time_windows_generator import sample_time_window
-from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE
+from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE, REALIZATIONS_PER_MAP
 
 
 def generate_time_window(customer_appear_time: int) -> Tuple[int, int]:
@@ -23,18 +23,20 @@ def generate_time_window(customer_appear_time: int) -> Tuple[int, int]:
 def generate_twcvrp_instance(
     num_customers: int,
     num_cities: Optional[int] = None,
+    instance: Optional[Dict] = None,
     num_depots: int = 1,
     is_dynamic: bool = False,
 ) -> Dict:
     num_cities = num_cities if num_cities else max(1, num_customers // 50)
-    instance = generate_base_instance(
-        num_customers,
-        MAP_SIZE,
-        num_cities,
-        num_depots,
-        DEMAND_RANGE,
-        is_dynamic,
-    )
+    if not instance:
+        instance = generate_base_instance(
+            num_customers,
+            MAP_SIZE,
+            num_cities,
+            num_depots,
+            DEMAND_RANGE,
+            is_dynamic,
+        )
     distances = get_distances(instance["map_instance"])
     travel_times = {}
     for i in range(len(instance["locations"])):
@@ -89,12 +91,26 @@ def generate_twcvrp_dataset(
         "num_cities": num_cities,
         "num_depots": num_depots,
     }
-    for _ in tqdm(
+    for index in tqdm(
         range(NUM_INSTANCES), desc=f"Generating {num_customers} customer instances"
     ):
-        instance = generate_twcvrp_instance(
-            num_customers, num_cities, num_depots, is_dynamic=is_dynamic
-        )
+
+        if index % REALIZATIONS_PER_MAP == 0:
+            instance = generate_twcvrp_instance(
+                num_customers=num_customers,
+                num_cities=num_cities,
+                instance=None,
+                num_depots=num_depots,
+                is_dynamic=is_dynamic,
+            )
+        else:
+            instance = generate_twcvrp_instance(
+                num_customers=num_customers,
+                num_cities=num_cities,
+                instance=instance,
+                num_depots=num_depots,
+                is_dynamic=is_dynamic,
+            )
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
         dataset["vehicle_capacities"].append(

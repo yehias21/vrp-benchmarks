@@ -68,7 +68,7 @@ class Map:
         for city in self.cities:
             locations.extend(city.batch_sample(self.size, loc_per_city))
         locations.extend(self.depots)
-        self.locations = self.depots + locations
+        self.locations = locations
         return locations
 
     def __repr__(self):
