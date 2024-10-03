@@ -15,10 +15,6 @@ def generate_base_instance(
 ) -> Dict:
     map_instance = Map(map_size, num_cities, num_depots)
     locations = map_instance.sample_locations(num_customers)
-    depot = next(loc for loc in locations if loc.type == DEPOT)
-    depot_index = locations.index(depot)
-    locations.pop(depot_index)
-    locations.insert(0, depot)
 
     demands = np.random.randint(
         demand_range[0], demand_range[1] + 1, size=num_customers + num_depots

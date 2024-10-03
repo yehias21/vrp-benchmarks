@@ -38,7 +38,7 @@ class City:
 
 
 class Map:
-    spread_range = (5, 20)
+    spread_range = (5, 50)
 
     def __init__(self, size: Tuple[int, int], num_cities: int, num_depots: int):
         self.size = size
@@ -50,11 +50,17 @@ class Map:
             )
             for _ in range(num_cities)
         ]
-        self.depots = [
-            Location(np.random.randint(size[0]), np.random.randint(size[1]), DEPOT)
-            for _ in range(num_depots)
-        ]
+        self.depots = self.generate_depots(num_depots)
         self.locations = []
+
+    def generate_depots(self, num_depots):
+        depots = []
+        for _ in range(num_depots):
+            assigned_city = np.random.choice(self.cities)
+            x = np.random.normal(assigned_city.center[0], 2 * assigned_city.spread)
+            y = np.random.normal(assigned_city.center[1], 2 * assigned_city.spread)
+            depots.append(Location(x, y, DEPOT))
+        return depots
 
     def sample_locations(self, num_locations: int) -> List[Location]:
         locations = []
@@ -62,7 +68,7 @@ class Map:
         for city in self.cities:
             locations.extend(city.batch_sample(self.size, loc_per_city))
         locations.extend(self.depots)
-        self.locations = locations
+        self.locations = self.depots + locations
         return locations
 
     def __repr__(self):
@@ -85,14 +91,14 @@ def draw_circle(img: Image, center, color, size, text=""):
 
 def map_drawer(map: Map, img_size=(720, 720)) -> Image:
     img = Image.new("RGB", img_size, "white")
-    for city in map.cities:
-        center = city.center
-        # scale
-        center = (
-            center[0] * img_size[0] // map.size[0],
-            center[1] * img_size[1] // map.size[1],
-        )
-        draw_circle(img, center, (255, 0, 0), 10, "CT")
+    # for city in map.cities:
+    #     center = city.center
+    #     # scale
+    #     center = (
+    #         center[0] * img_size[0] // map.size[0],
+    #         center[1] * img_size[1] // map.size[1],
+    #     )
+    #     draw_circle(img, center, (255, 0, 0), 10, "CT")
     for depot in map.depots:
         depot = (
             depot.x * img_size[0] // map.size[0],
