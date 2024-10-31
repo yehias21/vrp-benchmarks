@@ -5,15 +5,15 @@ import random
 import numpy as np
 from tqdm import tqdm
 
-from travel_time_generator import sample_travel_time, get_distances
-from common import (
+from .travel_time_generator import sample_travel_time, get_distances
+from .common import (
     generate_base_instance,
     save_dataset,
     load_dataset,
     visualize_instance,
 )
-from time_windows_generator import sample_time_window
-from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE, REALIZATIONS_PER_MAP
+from .time_windows_generator import sample_time_window
+from .constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE, REALIZATIONS_PER_MAP
 
 
 def generate_time_window(customer_appear_time: int) -> Tuple[int, int]:

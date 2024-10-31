@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple, Dict
-from city import Map, Location
-from constants import DEPOT, DYNAMIC_PERCENTAGE
+from .city import Map, Location
+from .constants import DEPOT, DYNAMIC_PERCENTAGE
 import random
 
 

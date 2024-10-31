@@ -4,14 +4,13 @@ from typing import Dict, Optional
 import numpy as np
 from tqdm import tqdm
 
-from common import (
+from .common import (
     generate_base_instance,
     save_dataset,
     load_dataset,
     visualize_instance,
 )
-from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE
-
+from .constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE
 
 def generate_cvrp_instance(
     num_customers: int,

@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from dataclasses import dataclass
 
-from constants import CUSTOMER, DEPOT
+from .constants import CUSTOMER, DEPOT
 
 
 @dataclass
