@@ -47,30 +47,20 @@ class TWCVRP_AntColonyOptimizer:
         return 1 / (distance_matrix + 1e-10)
 
     def select_next_location(self, current_loc, unvisited, heuristic, time_remaining):
-        # Print available unvisited locations and their heuristic values
-        print(f"Current location: {current_loc}, Current time: {time_remaining}")
-        print("Unvisited locations:", unvisited)
-        for loc in unvisited:
-            print(f"Location {loc}: Start Time = {self.data['time_windows'][loc][0]}, Distance = {heuristic[current_loc][loc]}")
+        # Get pheromone and heuristic values only for unvisited locations
+        pheromones = self.pheromone_matrix[current_loc][unvisited]
+        heuristic_values = heuristic[current_loc][unvisited]
+        
+        # Calculate probabilities for the next location
+        probs = (pheromones ** ALPHA) * (heuristic_values ** BETA)
+        if probs.sum() == 0:
+            return None  # No valid selection
+        probs /= probs.sum()  # Normalize to make it a probability distribution
 
-        # Try selecting the closest location by heuristic (distance)
-        nearest_loc = None
-        min_distance = float("inf")
-        for loc in unvisited:
-            distance = heuristic[current_loc][loc]
-            if time_remaining + distance >= self.data["time_windows"][loc][0]:  # Only check start time
-                if distance < min_distance:
-                    min_distance = distance
-                    nearest_loc = loc
-
-        if nearest_loc is not None:
-            print(f"Selected nearest location: {nearest_loc} with distance {min_distance}")
-            return nearest_loc
-        else:
-            print("No feasible locations found based on start of time windows only.")
-            return None
-
-
+        # Temporarily remove time window constraints to debug feasibility
+        next_loc = np.random.choice(unvisited, p=probs)
+        return next_loc
+        
     def update_pheromones(self, routes: List[List[int]], avg_route_length: float):
         self.pheromone_matrix *= (1 - EVAPORATION_RATE)
         
@@ -94,13 +84,11 @@ class TWCVRP_AntColonyOptimizer:
                 # Set current_time to align closer to the first available customer
                 earliest_customer_time = min(self.data["time_windows"][i][0] for i in unvisited)
                 current_time = max(0, earliest_customer_time - 10)  # Start slightly earlier
-                print("Starting current_time:", current_time)  # Debug: Check start time
 
                 while unvisited:
                     current_loc = route[-1]
                     next_loc = self.select_next_location(current_loc, unvisited, heuristic, current_time)
                     if next_loc is None:
-                        print("Breaking loop: No valid next location due to time windows")
                         break
                     route.append(next_loc)
                     unvisited.remove(next_loc)
@@ -109,7 +97,6 @@ class TWCVRP_AntColonyOptimizer:
                     travel_time = heuristic[current_loc][next_loc]
                     current_time += travel_time
                     current_time = max(current_time, self.data["time_windows"][next_loc][0])
-                    print(f"Current time after reaching {next_loc}: {current_time}")  # Debug time after each step
 
                 route.append(0)  # Return to depot if no more locations can be visited
                 routes.append(route)
@@ -122,14 +109,10 @@ class TWCVRP_AntColonyOptimizer:
                         from_loc = route[i]
                         to_loc = route[i + 1]
                         distance = self.data["realizations"][r][from_loc][to_loc]
-                        print(f"Realization {r}, From {from_loc} to {to_loc}: Distance = {distance}")
                         total_distance += distance
                     realization_lengths.append(total_distance)
 
                 avg_route_length = np.mean(realization_lengths)
-                print(f"Route: {route}")
-                print(f"Realization Lengths: {realization_lengths}")
-                print(f"Average Route Length: {avg_route_length}")
 
                 route_lengths.append(avg_route_length)
 
