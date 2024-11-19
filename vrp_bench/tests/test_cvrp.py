@@ -1,7 +1,10 @@
 import pytest
-from real_cvrp import generate_cvrp_dataset
-from constants import NUM_INSTANCES
+import sys, os
 
+# Ensure that the parent directory is in the path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..')))
+from vrp_bench.real_cvrp import generate_cvrp_dataset
+from vrp_bench.constants import NUM_INSTANCES
 
 @pytest.mark.parametrize(
     "num_vehicles,num_customers",
