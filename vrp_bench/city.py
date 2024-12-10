@@ -2,9 +2,9 @@ from typing import Tuple, List
 import numpy as np
 from PIL import Image, ImageDraw
 from dataclasses import dataclass
-
-from .constants import CUSTOMER, DEPOT
-
+import math
+from constants import CUSTOMER, DEPOT
+from sklearn.cluster import KMeans
 
 @dataclass
 class Location:
@@ -13,20 +13,12 @@ class Location:
     type: str = CUSTOMER
 
     def distance(self, other: "Location") -> int:
-        return np.linalg.norm(
-            np.array([self.x, self.y]) - np.array([other.x, other.y])
-        ).astype(int)
-
+        return np.linalg.norm([self.x - other.x, self.y - other.y]).astype(int)
 
 class City:
     def __init__(self, center: Tuple[float, float], spread: float):
         self.center = np.array(center)
         self.spread = spread
-
-    def sample(self, map_size: Tuple[int, int]) -> Location:
-        sample = np.random.normal(self.center, self.spread)
-        loc = np.clip(sample, [0, 0], map_size).astype(int)
-        return Location(loc[0], loc[1])
 
     def batch_sample(self, map_size: Tuple[int, int], n: int) -> List[Location]:
         samples = np.random.normal(self.center, self.spread, size=(n, 2))
@@ -36,40 +28,87 @@ class City:
     def __repr__(self):
         return f"City(center={self.center}, spread={self.spread})"
 
-
 class Map:
-    spread_range = (5, 50)
-
     def __init__(self, size: Tuple[int, int], num_cities: int, num_depots: int):
         self.size = size
+        self.num_cities = num_cities
+        self.num_depots = num_depots
 
-        self.cities = [
-            City(
-                (np.random.randint(size[0]), np.random.randint(size[1])),
-                np.random.randint(*self.spread_range),
-            )
-            for _ in range(num_cities)
-        ]
-        self.depots = self.generate_depots(num_depots)
+        width, height = size
+        area = width * height
+        # Compute desired spread based on area and number of cities
+        # Add a small clamp to avoid zero spread if num_cities is large
+        spread = math.sqrt(area / (math.pi * num_cities)) if num_cities > 0 else 1
+        self.spread_range = (0.3*spread, 0.4*spread)
+
+        # Step 1: Prepare data points: all integer coordinates in the map
+        # This could be large, consider downsampling if needed
+        points = [(x, y) for x in range(size[0]) for y in range(size[1])]
+        points = np.array(points)
+
+        # Step 2: Run KMeans on these points to find city centers
+        kmeans = KMeans(n_clusters=num_cities, init='random', n_init=10, max_iter=300)
+        kmeans.fit(points)
+        centers = kmeans.cluster_centers_
+
+        city_centers = []
+        for c in centers:
+            x, y = c
+            # Round and clamp
+            x = int(min(max(round(x), 0), size[0] - 1))
+            y = int(min(max(round(y), 0), size[1] - 1))
+            spread = np.random.randint(*self.spread_range)
+            city_centers.append(City((x, y), spread))
+
+        self.cities = city_centers
+        self.depots = []
         self.locations = []
-
-    def generate_depots(self, num_depots):
-        depots = []
-        for _ in range(num_depots):
-            assigned_city = np.random.choice(self.cities)
-            x = np.random.normal(assigned_city.center[0], 2 * assigned_city.spread)
-            y = np.random.normal(assigned_city.center[1], 2 * assigned_city.spread)
-            depots.append(Location(x, y, DEPOT))
-        return depots
 
     def sample_locations(self, num_locations: int) -> List[Location]:
         locations = []
         loc_per_city = num_locations // len(self.cities)
-        for city in self.cities:
-            locations.extend(city.batch_sample(self.size, loc_per_city))
-        locations.extend(self.depots)
+        leftover = num_locations % len(self.cities)
+
+        for idx, city in enumerate(self.cities):
+            n = loc_per_city + (1 if idx < leftover else 0)
+            locations.extend(city.batch_sample(self.size, n))
+
         self.locations = locations
         return locations
+
+    def cluster_and_place_depots(self):
+        customers = np.array([[loc.x, loc.y] for loc in self.locations if loc.type == CUSTOMER])
+        if len(customers) == 0:
+            return
+
+        if self.num_depots == 1:
+            # No need for clustering, just find the mean position
+            mean_x = np.mean(customers[:, 0])
+            mean_y = np.mean(customers[:, 1])
+
+            # Clamp to map boundaries
+            mean_x = int(min(max(round(mean_x), 0), self.size[0] - 1))
+            mean_y = int(min(max(round(mean_y), 0), self.size[1] - 1))
+
+            depot = Location(mean_x, mean_y, DEPOT)
+            self.depots = [depot]
+            self.locations.append(depot)
+        else:
+            # Proceed with KMeans for multiple depots
+            initial_centers = np.array([c.center for c in self.cities[:self.num_depots]])
+            kmeans = KMeans(n_clusters=self.num_depots, init=initial_centers, n_init=1, max_iter=300)
+            kmeans.fit(customers)
+
+            depots = []
+            for center in kmeans.cluster_centers_:
+                x, y = center
+                x = int(min(max(round(x), 0), self.size[0] - 1))
+                y = int(min(max(round(y), 0), self.size[1] - 1))
+                depots.append(Location(x, y, DEPOT))
+
+            self.depots = depots
+            self.locations.extend(depots)
+
 
     def __repr__(self):
         return f"Map(size={self.size}, num_cities={len(self.cities)}, num_depots={len(self.depots)}, num_locations={len(self.locations)})"
@@ -91,35 +130,31 @@ def draw_circle(img: Image, center, color, size, text=""):
 
 def map_drawer(map: Map, img_size=(720, 720)) -> Image:
     img = Image.new("RGB", img_size, "white")
-    # for city in map.cities:
-    #     center = city.center
-    #     # scale
-    #     center = (
-    #         center[0] * img_size[0] // map.size[0],
-    #         center[1] * img_size[1] // map.size[1],
-    #     )
-    #     draw_circle(img, center, (255, 0, 0), 10, "CT")
+
+    # Draw depots
     for depot in map.depots:
-        depot = (
+        dd = (
             depot.x * img_size[0] // map.size[0],
             depot.y * img_size[1] // map.size[1],
         )
-        draw_circle(img, depot, (0, 0, 255), 15, "D")
+        draw_circle(img, dd, (0, 0, 255), 15, "D")
 
+    # Draw customers
     for loc in map.locations:
         t = loc.type
-        loc = (
+        ll = (
             loc.x * img_size[0] // map.size[0],
             loc.y * img_size[1] // map.size[1],
         )
-        draw_circle(img, loc, (0, 0, 0), 5, t[0])
+        color = (0,0,0) if t==CUSTOMER else (0,0,255)
+        draw_circle(img, ll, color, 5, t[0])
     return img
 
 
 if __name__ == "__main__":
-    city = City((50, 50), 10)
-    print(city.sample((100, 100)))
-    map = Map((100, 100), 1, 1)
-    print(map.sample_locations(500))
-    img = map_drawer(map)
+    # Example with a small map
+    map_obj = Map((50, 50), num_cities=3, num_depots=1)
+    map_obj.sample_locations(500)
+    map_obj.cluster_and_place_depots()
+    img = map_drawer(map_obj)
     img.show()
