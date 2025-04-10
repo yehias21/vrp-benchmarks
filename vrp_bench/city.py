@@ -21,9 +21,35 @@ class City:
         self.spread = spread
 
     def batch_sample(self, map_size: Tuple[int, int], n: int) -> List[Location]:
-        samples = np.random.normal(self.center, self.spread, size=(n, 2))
-        locations = np.clip(samples, [0, 0], map_size).astype(int)
-        return [Location(loc[0], loc[1]) for loc in locations]
+        locations = []         # List to hold valid sampled points (as tuples)
+        point_counts = {}      # Dictionary to count occurrences of each tuple
+        max_occurrence: int = 2
+        iteration = 0
+
+        while len(locations) < n and iteration < 30:
+            remaining = n - len(locations)
+            # Sample remaining points
+            samples = np.random.normal(self.center, self.spread, size=(remaining, 2))
+            # Clip values so they stay within the map bounds, then convert to integers
+            samples_clipped = np.clip(samples, [0, 0], map_size).astype(int)
+            
+            for point in samples_clipped:
+                pt = tuple(point)  # convert array to tuple for hashing
+                # Only add the point if it has not reached max_occurrence
+                if point_counts.get(pt, 0) < max_occurrence:
+                    locations.append(pt)
+                    point_counts[pt] = point_counts.get(pt, 0) + 1
+                    # Stop if we have reached the desired number of points
+                    if len(locations) == n:
+                        break
+            iteration += 1
+
+        if len(locations) < n:
+            print(f"Delta (n - current points): {n - len(locations)}")
+        
+        # Convert each tuple to a Location instance before returning
+        return [Location(x, y) for x, y in locations]
+
 
     def __repr__(self):
         return f"City(center={self.center}, spread={self.spread})"
@@ -47,7 +73,7 @@ class Map:
         points = np.array(points)
 
         # Step 2: Run KMeans on these points to find city centers
-        kmeans = KMeans(n_clusters=num_cities, init='random', n_init=10, max_iter=300)
+        kmeans = KMeans(n_clusters=int(num_cities), init='random', n_init=10, max_iter=300)
         kmeans.fit(points)
         centers = kmeans.cluster_centers_
 
@@ -74,7 +100,6 @@ class Map:
             locations.extend(city.batch_sample(self.size, n))
 
         self.locations = locations
-        return locations
 
     def cluster_and_place_depots(self):
         customers = np.array([[loc.x, loc.y] for loc in self.locations if loc.type == CUSTOMER])
@@ -92,7 +117,7 @@ class Map:
 
             depot = Location(mean_x, mean_y, DEPOT)
             self.depots = [depot]
-            self.locations.append(depot)
+            self.locations.insert(0, depot )
         else:
             # Proceed with KMeans for multiple depots
             initial_centers = np.array([c.center for c in self.cities[:self.num_depots]])
@@ -107,7 +132,7 @@ class Map:
                 depots.append(Location(x, y, DEPOT))
 
             self.depots = depots
-            self.locations.extend(depots)
+            self.locations = depots + self.locations
 
 
     def __repr__(self):
@@ -134,8 +159,8 @@ def map_drawer(map: Map, img_size=(720, 720)) -> Image:
     # Draw depots
     for depot in map.depots:
         dd = (
-            depot.x * img_size[0] // map.size[0],
-            depot.y * img_size[1] // map.size[1],
+            np.uint32(depot.x) * img_size[0] // map.size[0],
+            np.uint32(depot.y) * img_size[1] // map.size[1],
         )
         draw_circle(img, dd, (0, 0, 255), 15, "D")
 
@@ -143,8 +168,8 @@ def map_drawer(map: Map, img_size=(720, 720)) -> Image:
     for loc in map.locations:
         t = loc.type
         ll = (
-            loc.x * img_size[0] // map.size[0],
-            loc.y * img_size[1] // map.size[1],
+            np.uint32(loc.x) * img_size[0] // map.size[0],
+            np.uint32(loc.y) * img_size[1] // map.size[1],
         )
         color = (0,0,0) if t==CUSTOMER else (0,0,255)
         draw_circle(img, ll, color, 5, t[0])

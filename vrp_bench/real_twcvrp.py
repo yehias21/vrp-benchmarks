@@ -3,17 +3,18 @@ from typing import Dict, Tuple, Optional
 import random
 
 import numpy as np
+from numpy import dtype
 from tqdm import tqdm
 
-from .travel_time_generator import sample_travel_time, get_distances
-from .common import (
+from travel_time_generator import sample_travel_time, get_distances
+from common import (
     generate_base_instance,
     save_dataset,
     load_dataset,
     visualize_instance,
 )
-from .time_windows_generator import sample_time_window
-from .constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE, REALIZATIONS_PER_MAP
+from time_windows_generator import sample_time_window
+from constants import NUM_INSTANCES, DEMAND_RANGE, MAP_SIZE, REALIZATIONS_PER_MAP
 
 
 def generate_time_window(customer_appear_time: int) -> Tuple[int, int]:
@@ -70,6 +71,12 @@ def get_time_matrix(num_customers, travel_times) -> list:
     return time_matrix.tolist()
 
 
+def get_num_vehicles(time_windows):
+    tw = np.copy(np.array(list(time_windows))).flatten()
+    from matplotlib import pyplot as plt
+    return np.max(plt.hist(tw, bins=24, range=(0,1440))[0]).astype(dtype=np.uint16)
+
+
 def generate_twcvrp_dataset(
     num_customers: int,
     num_cities: Optional[int] = None,
@@ -87,6 +94,7 @@ def generate_twcvrp_dataset(
         "time_windows": [],
         "appear_times": [],
         "vehicle_capacities": [],
+        "travel_times": [],
         "map_size": MAP_SIZE,
         "num_cities": num_cities,
         "num_depots": num_depots,
@@ -111,6 +119,9 @@ def generate_twcvrp_dataset(
                 num_depots=num_depots,
                 is_dynamic=is_dynamic,
             )
+        # dynamic num_vehicles
+        num_vehicles = get_num_vehicles(instance["time_windows"])
+        #
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
         dataset["vehicle_capacities"].append(
@@ -127,19 +138,21 @@ def generate_twcvrp_dataset(
         dataset["time_windows"].append(instance["time_windows"].astype(precision))
         dataset["appear_times"].append(instance["appear_time"])
         dataset["num_vehicles"].append(num_vehicles)
+        dataset["travel_times"].append(instance['travel_times'])
 
     return {k: np.array(v) for k, v in dataset.items()}
 
 
 def main():
     customer_counts = [10, 20, 50, 100, 200, 500, 1000]
-    os.makedirs("data/real_twcvrp", exist_ok=True)
+    os.makedirs("../data/real_twcvrp", exist_ok=True)
     for num_customers in tqdm(customer_counts):
-        dataset = generate_twcvrp_dataset(num_customers)
-        save_dataset(dataset, f"data/real_twcvrp/twvrp_{num_customers}.npz")
+        depots = max(1, num_customers // 100)
+        dataset = generate_twcvrp_dataset(num_customers, num_depots=depots)
+        save_dataset(dataset, f"../data/real_twcvrp/twvrp_{num_customers}.npz")
 
 
 if __name__ == "__main__":
     main()
-    dataset = load_dataset("data/real_twcvrp/twvrp_10.npz")
+    dataset = load_dataset("../data/real_twcvrp/twvrp_1000.npz")
     visualize_instance(dataset)

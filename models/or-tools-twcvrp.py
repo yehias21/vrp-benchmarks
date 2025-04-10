@@ -1,6 +1,5 @@
 import multiprocessing as mp
 from argparse import ArgumentParser
-
 import numpy as np
 from tqdm import tqdm
 from ortools.constraint_solver import routing_enums_pb2
@@ -8,9 +7,19 @@ from ortools.constraint_solver import pywrapcp
 
 
 def solve_twcvrp(data):
-    manager = pywrapcp.RoutingIndexManager(
-        len(data["time_matrix"]), data["num_vehicles"], data["depot"]
-    )
+    # For multi-depot: if "vehicle_depots" is provided, use those as start and end nodes.
+    if "vehicle_depots" in data:
+        vehicle_depots = data["vehicle_depots"]
+        manager = pywrapcp.RoutingIndexManager(
+            len(data["time_matrix"]), data["num_vehicles"], vehicle_depots, vehicle_depots
+        )
+        # Prepare the list of depot nodes for later use.
+        depot_nodes = set(vehicle_depots)
+    else:
+        manager = pywrapcp.RoutingIndexManager(
+            len(data["time_matrix"]), data["num_vehicles"], data["depot"]
+        )
+        depot_nodes = {data["depot"]}
 
     routing = pywrapcp.RoutingModel(manager)
 
@@ -20,29 +29,31 @@ def solve_twcvrp(data):
         return data["time_matrix"][from_node][to_node]
 
     transit_callback_index = routing.RegisterTransitCallback(time_callback)
-
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
-    time = "Time"
+    time_label = "Time"
     routing.AddDimension(
         evaluator_index=transit_callback_index,
         slack_max=30,  # allow waiting time
         capacity=1440,  # maximum time per vehicle
         fix_start_cumul_to_zero=False,  # Don't force start cumul to zero.
-        name=time,
+        name=time_label,
     )
-    time_dimension = routing.GetDimensionOrDie(time)
+    time_dimension = routing.GetDimensionOrDie(time_label)
+
+    # Set time windows for all locations except depots.
     for location_idx, time_window in enumerate(data["time_windows"]):
-        if location_idx == data["depot"]:
+        if location_idx in depot_nodes:
             continue
         index = manager.NodeToIndex(location_idx)
         time_dimension.CumulVar(index).SetRange(time_window[0], time_window[1])
 
-    depot_idx = data["depot"]
+    # For each vehicle, set the time window constraint at its starting depot.
     for vehicle_id in range(data["num_vehicles"]):
-        index = routing.Start(vehicle_id)
-        time_dimension.CumulVar(index).SetRange(
-            data["time_windows"][depot_idx][0], data["time_windows"][depot_idx][1]
+        start_index = routing.Start(vehicle_id)
+        depot_node = manager.IndexToNode(start_index)
+        time_dimension.CumulVar(start_index).SetRange(
+            data["time_windows"][depot_node][0], data["time_windows"][depot_node][1]
         )
 
     def demand_callback(from_index):
@@ -57,16 +68,21 @@ def solve_twcvrp(data):
         fix_start_cumul_to_zero=True,
         name="Capacity",
     )
-    # Instantiate route start and end times to produce feasible times.
-    for i in range(data["num_vehicles"]):
-        routing.AddVariableMinimizedByFinalizer(
-            time_dimension.CumulVar(routing.Start(i))
-        )
-        routing.AddVariableMinimizedByFinalizer(time_dimension.CumulVar(routing.End(i)))
 
-    # this is to allow the model to drop some locations, otherwise it wouldn't produce a solution
-    penalty = 1410 * len(data["time_matrix"])
-    for node in range(1, len(data["time_matrix"])):
+    # Finalize route start and end times.
+    for vehicle_id in range(data["num_vehicles"]):
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.Start(vehicle_id))
+        )
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.End(vehicle_id))
+        )
+
+    # Allow dropping non-depot locations.
+    penalty = 5000 * len(data["time_matrix"])
+    for node in range(len(data["time_matrix"])):
+        if node in depot_nodes:
+            continue  # do not drop depot nodes.
         routing.AddDisjunction([manager.NodeToIndex(node)], penalty)
 
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
@@ -77,26 +93,32 @@ def solve_twcvrp(data):
         routing_enums_pb2.LocalSearchMetaheuristic.AUTOMATIC
     )
     search_parameters.time_limit.FromSeconds(10)
+
     solution = routing.SolveWithParameters(search_parameters)
 
     total_route_time = 0
+    visited_clients = 0
+    # Iterate each vehicle's route, count the visited clients (non-depot nodes)
     for vehicle_id in range(data["num_vehicles"]):
         index = routing.Start(vehicle_id)
         route_time = 0
         while not routing.IsEnd(index):
             previous_index = index
             index = solution.Value(routing.NextVar(index))
-            route_time += routing.GetArcCostForVehicle(
-                previous_index, index, vehicle_id
-            )
+            route_time += routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+            node = manager.IndexToNode(index)
+            if node not in depot_nodes:
+                visited_clients += 1
         total_route_time += route_time
-    return total_route_time
+
+    print(f"Visited clients in instance: {visited_clients}")
+    return total_route_time, visited_clients
 
 
 def solve_twcvrp_wrapper(args):
     i, instance = args
-    result = solve_twcvrp(instance)
-    return i, result
+    route_time, visited = solve_twcvrp(instance)
+    return i, route_time, visited
 
 
 def get_time_matrix(num_customers, travel_times) -> list:
@@ -112,45 +134,54 @@ def get_time_matrix(num_customers, travel_times) -> list:
 def main():
     parser = ArgumentParser()
     parser.add_argument(
-        "--dataset_path", type=str, default="data/real_twcvrp/twvrp_10.npz"
+        "--dataset_path", type=str, default="../data/real_twcvrp/twvrp_1000.npz"
     )
     parser.add_argument("--num_processes", "-n", type=int, default=2)
     args = parser.parse_args()
     dataset = dict(np.load(args.dataset_path, allow_pickle=True))
+
     num_instances = len(dataset["locations"])
     num_customers = len(dataset["locations"][0])
+
+    # For multi-depot, assume that dataset["num_depots"] holds the number of depots.
+    # Here we assign each vehicle a depot in a round-robin fashion.
+    num_depots = int(dataset["num_depots"])
+    num_vehicles = int(dataset["num_vehicles"])
+    vehicle_depots = [i % num_depots for i in range(num_vehicles)]
+
     instances = [
         {
-            "depot": 0,
-            "num_vehicles": 1,
+            "vehicle_depots": vehicle_depots,
+            "num_vehicles": num_vehicles,
             "locations": dataset["locations"][i],
             "demands": dataset["demands"][i],
             "time_matrix": get_time_matrix(num_customers, dataset["travel_times"][i]),
-            "time_windows": dataset["time_windows"][i].tolist(),
-            "vehicle_capacities": [
-                dataset["vehicle_capacities"][i].item() for _ in range(1)
-            ],
+            "time_windows": list(map(lambda x: [0, 1440], dataset["time_windows"][i].tolist())),
+            "vehicle_capacities": dataset["vehicle_capacities"][i]
         }
         for i in range(num_instances)
     ]
 
+    total_route_time = 0
+    total_visited_clients = 0
     with mp.Pool(processes=args.num_processes) as pool:
-        results = []
         with tqdm(total=num_instances) as pbar:
-            for i, result in pool.imap_unordered(
-                solve_twcvrp_wrapper, enumerate(instances)
-            ):
-                results.append(result)
+            for i, route_time, visited in pool.imap_unordered(solve_twcvrp_wrapper, enumerate(instances)):
+                total_route_time += route_time
+                total_visited_clients += visited
+                avg_route_time = total_route_time / (i + 1)
+                avg_visited = total_visited_clients / (i + 1)
                 pbar.update(1)
-                obj_time = sum(results)
                 pbar.set_description(
-                    f"[{i}] Objective time: {obj_time:.2f} | Avg: {obj_time / (i+1):.4f}"
+                    f"[Instance {i}] Obj time total: {total_route_time:.2f} | Avg time: {avg_route_time:.4f} | "
+                    f"Total visited: {total_visited_clients} | Avg visited: {avg_visited:.2f}"
                 )
 
-    obj_time = sum(results)
-    avg_obj_time = obj_time / num_instances
+    avg_obj_time = total_route_time / num_instances
     print(f"Average objective time: {avg_obj_time:.4f}")
+    print(f"Total visited customers across all instances: {total_visited_clients}")
 
 
 if __name__ == "__main__":
     main()
+

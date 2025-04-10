@@ -1,7 +1,7 @@
 import math
 import random
 from datetime import datetime, time
-from .city import Map
+from city import Map
 import numpy as np
 
 def normal_distribution(x, mean, std_dev):

@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple, Dict
-from .city import Map, Location
-from .constants import DEPOT, DYNAMIC_PERCENTAGE
+from city import Map, Location
+from constants import DEPOT, DYNAMIC_PERCENTAGE
 import random
 
 
@@ -14,7 +14,9 @@ def generate_base_instance(
     is_dynamic: bool = False,
 ) -> Dict:
     map_instance = Map(map_size, num_cities, num_depots)
-    locations = map_instance.sample_locations(num_customers)
+    map_instance.sample_locations(num_customers)
+    map_instance.cluster_and_place_depots()
+    locations = map_instance.locations
 
     demands = np.random.randint(
         demand_range[0], demand_range[1] + 1, size=num_customers + num_depots
@@ -38,7 +40,8 @@ def generate_base_instance(
         "demands": demands,
         "map_instance": map_instance,
         "vehicle_capacity": int(
-            (random.random() * 0.5 + 0.5) * max(demands) * num_customers
+            # (random.random() * 0.5 + 0.5) * max(demands) * num_customers
+            sum(demands)
         ),
         "appear_time": np.array(appear_time),
     }
