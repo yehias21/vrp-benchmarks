@@ -140,19 +140,18 @@ def generate_twcvrp_dataset(
         dataset["num_vehicles"].append(num_vehicles)
         dataset["travel_times"].append(instance['travel_times'])
 
-    return {k: np.array(v) for k, v in dataset.items()}
+    return {k: np.array(v, dtype=object) for k, v in dataset.items()}
 
 
 def main():
     customer_counts = [10, 20, 50, 100, 200, 500, 1000]
     os.makedirs("../data/real_twcvrp", exist_ok=True)
     for num_customers in tqdm(customer_counts):
-        depots = max(1, num_customers // 100)
-        dataset = generate_twcvrp_dataset(num_customers, num_depots=depots)
-        save_dataset(dataset, f"../data/real_twcvrp/twvrp_{num_customers}.npz")
+        dataset = generate_twcvrp_dataset(num_customers, num_depots=1)
+        save_dataset(dataset, f"../data/real_twcvrp/twvrp_{num_customers}_single_depot.npz")
 
 
 if __name__ == "__main__":
     main()
-    dataset = load_dataset("../data/real_twcvrp/twvrp_1000.npz")
-    visualize_instance(dataset)
+    # dataset = load_dataset("../data/real_twcvrp/twvrp_1000_depots_equal_city.npz")
+    # visualize_instance(dataset)
