@@ -42,6 +42,8 @@ def calculate_delay(distance, current_time):
     return delay
 
 def sample_travel_time(a, b, distances, current_time, velocity=1):
+    if a == b:  # Same node
+        return 0.0
     distance = distances[(a, b)]
     delay = calculate_delay(distance, current_time)
     return distance / velocity + delay

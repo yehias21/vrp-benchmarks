@@ -1,0 +1,330 @@
+{
+  "cvrp_10_single_depot_single_vehicule_sumDemands": {
+    "NN+2opt": [
+      {
+        "total_cost": 2518.4107352692204,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.08724324843972993,
+        "time_window_violations": 0,
+        "runtime": 0.010249137878417969
+      },
+      {
+        "total_cost": 2945.2180139548104,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.08984640919893358,
+        "time_window_violations": 0,
+        "runtime": 0.0
+      }
+    ],
+    "Tabu Search": [
+      {
+        "total_cost": 2526.1295392502193,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.1145283267778485,
+        "time_window_violations": 0,
+        "runtime": 0.01227879524230957
+      },
+      {
+        "total_cost": 2945.396671497931,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.09727974873827804,
+        "time_window_violations": 0,
+        "runtime": 0.01035165786743164
+      }
+    ],
+    "ACO": [
+      {
+        "total_cost": 2518.210208413207,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.049078104294641996,
+        "time_window_violations": 0,
+        "runtime": 0.013363122940063477
+      },
+      {
+        "total_cost": 2465.1862650118715,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.1750222767735993,
+        "time_window_violations": 0,
+        "runtime": 0.012608766555786133
+      }
+    ],
+    "OR-Tools": [
+      {
+        "total_cost": 2309.4261720564646,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.07925245316835867,
+        "time_window_violations": 0,
+        "runtime": 1.0331308841705322
+      },
+      {
+        "total_cost": 2459.0354881349863,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.10739568017144874,
+        "time_window_violations": 0,
+        "runtime": 1.006530523300171
+      }
+    ]
+  },
+  "cvrp_20_multi_depot": {
+    "NN+2opt": [
+      {
+        "total_cost": 3698.8029082223784,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.16104209191806176,
+        "time_window_violations": 0,
+        "runtime": 0.0028498172760009766
+      },
+      {
+        "total_cost": 4153.5613254592,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.12483922419962122,
+        "time_window_violations": 0,
+        "runtime": 0.008522987365722656
+      }
+    ],
+    "Tabu Search": [
+      {
+        "total_cost": 3735.512992541815,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.1575205867940393,
+        "time_window_violations": 0,
+        "runtime": 0.021999597549438477
+      },
+      {
+        "total_cost": 4153.572044605936,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.04612869311644732,
+        "time_window_violations": 0,
+        "runtime": 0.02233147621154785
+      }
+    ],
+    "ACO": [
+      {
+        "total_cost": 3698.787059530339,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.029191012531991172,
+        "time_window_violations": 0,
+        "runtime": 0.027492046356201172
+      },
+      {
+        "total_cost": 4153.715473084126,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.029033949905517407,
+        "time_window_violations": 0,
+        "runtime": 0.026031017303466797
+      }
+    ],
+    "OR-Tools": [
+      {
+        "total_cost": 3272.7719052161374,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.05122276489708336,
+        "time_window_violations": 0,
+        "runtime": 1.0052976608276367
+      },
+      {
+        "total_cost": 3414.345205103997,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.07407051489639914,
+        "time_window_violations": 0,
+        "runtime": 1.004990577697754
+      }
+    ]
+  },
+  "twvrp_10_depots_equal_city": {
+    "NN+2opt": [
+      {
+        "total_cost": 4035.2105145049304,
+        "waiting_time": 3269.779012718441,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.09199942334304938,
+        "time_window_violations": 0,
+        "runtime": 0.003009319305419922
+      },
+      {
+        "total_cost": 4696.978704273101,
+        "waiting_time": 2126.581827919788,
+        "cvr": 10.0,
+        "feasibility": 0.9,
+        "robustness": 0.057348080910035855,
+        "time_window_violations": 1,
+        "runtime": 0.0020036697387695312
+      }
+    ],
+    "Tabu Search": [
+      {
+        "total_cost": 4035.7021428385174,
+        "waiting_time": 3343.48084837489,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.04152497755700881,
+        "time_window_violations": 0,
+        "runtime": 0.13231563568115234
+      },
+      {
+        "total_cost": 4214.726872636262,
+        "waiting_time": 2896.284488524616,
+        "cvr": 10.0,
+        "feasibility": 0.0,
+        "robustness": 0.14979858392732623,
+        "time_window_violations": 1,
+        "runtime": 0.18296527862548828
+      }
+    ],
+    "ACO": [
+      {
+        "total_cost": 3874.046658593217,
+        "waiting_time": 3754.4374639967623,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.08899721433666952,
+        "time_window_violations": 0,
+        "runtime": 0.011217117309570312
+      },
+      {
+        "total_cost": 3906.855421230806,
+        "waiting_time": 2384.327025696893,
+        "cvr": 10.0,
+        "feasibility": 0.0,
+        "robustness": 0.11378911715777489,
+        "time_window_violations": 1,
+        "runtime": 0.013083934783935547
+      }
+    ],
+    "OR-Tools": [
+      {
+        "total_cost": 4035.351554330379,
+        "waiting_time": 3269.7056991426466,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.05655961028354038,
+        "time_window_violations": 0,
+        "runtime": 0.006443977355957031
+      },
+      {
+        "total_cost": 4697.025890362341,
+        "waiting_time": 2126.5283872748437,
+        "cvr": 10.0,
+        "feasibility": 0.9,
+        "robustness": 0.0901563040538207,
+        "time_window_violations": 1,
+        "runtime": 0.0025663375854492188
+      }
+    ]
+  },
+  "twvrp_20_single_depot": {
+    "NN+2opt": [
+      {
+        "total_cost": 7595.140593607786,
+        "waiting_time": 3584.502616115446,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.11891636502712452,
+        "time_window_violations": 0,
+        "runtime": 0.0034236907958984375
+      },
+      {
+        "total_cost": 8246.381335985818,
+        "waiting_time": 6524.311254306212,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.09530813290411383,
+        "time_window_violations": 0,
+        "runtime": 0.0
+      }
+    ],
+    "Tabu Search": [
+      {
+        "total_cost": 6466.6919554040505,
+        "waiting_time": 3528.2943777652195,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.32700826123372395,
+        "time_window_violations": 0,
+        "runtime": 0.33014988899230957
+      },
+      {
+        "total_cost": 7816.750220284371,
+        "waiting_time": 5867.025628102784,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.08141041205620399,
+        "time_window_violations": 0,
+        "runtime": 0.3895120620727539
+      }
+    ],
+    "ACO": [
+      {
+        "total_cost": 7595.252249026984,
+        "waiting_time": 3584.4015222779767,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.11263230852204047,
+        "time_window_violations": 0,
+        "runtime": 0.02869415283203125
+      },
+      {
+        "total_cost": 7503.120166396259,
+        "waiting_time": 5777.062392315569,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.13798182546809312,
+        "time_window_violations": 0,
+        "runtime": 0.033164262771606445
+      }
+    ],
+    "OR-Tools": [
+      {
+        "total_cost": 7595.4388350444315,
+        "waiting_time": 3584.2728313426887,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.09110493585093013,
+        "time_window_violations": 0,
+        "runtime": 0.008696556091308594
+      },
+      {
+        "total_cost": 8246.57321907987,
+        "waiting_time": 6524.315080215359,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "robustness": 0.22000174428725597,
+        "time_window_violations": 0,
+        "runtime": 0.0074350833892822266
+      }
+    ]
+  }
+}

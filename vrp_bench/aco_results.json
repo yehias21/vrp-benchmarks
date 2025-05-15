@@ -1,0 +1,441 @@
+{
+  "solver": "ACO",
+  "overall": {
+    "total_cost": 40566.52673165726,
+    "waiting_time": 12317.310968755328,
+    "cvr": 1.5860003898655421,
+    "feasibility": 0.6904761904761905,
+    "runtime": 11.38168740272522,
+    "robustness": 0.12238670260975736
+  },
+  "cvrp": {
+    "total_cost": 10384.943763837164,
+    "waiting_time": 0.0,
+    "cvr": 0.0,
+    "feasibility": 1.0,
+    "runtime": 11.159784464609055,
+    "robustness": 0.0798875561575741
+  },
+  "twcvrp": {
+    "total_cost": 70748.10969947735,
+    "waiting_time": 24634.621937510656,
+    "cvr": 3.1720007797310843,
+    "feasibility": 0.38095238095238093,
+    "runtime": 11.603590340841384,
+    "robustness": 0.16488584906194065
+  },
+  "by_size": {
+    "small": {
+      "feasibility": 0.9166666666666665,
+      "cost": 6080.672323550633,
+      "cvr": 0.6146572104018913,
+      "runtime": 0.06955761379665798
+    },
+    "medium": {
+      "feasibility": 0.5416666666666666,
+      "cost": 31371.852518577307,
+      "cvr": 2.2661812503174037,
+      "runtime": 1.5305664141972861
+    },
+    "large": {
+      "feasibility": 0.5,
+      "cost": 101489.98255689714,
+      "cvr": 2.3628342986091555,
+      "runtime": 38.201003074645996
+    }
+  },
+  "detailed": [
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 10,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 2183.586946860471,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.014310439427693685,
+        "robustness": 0.053886757017088886
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 10,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 2325.44061075099,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.011851310729980469,
+        "robustness": 0.09812062515893383
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 20,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 3725.9306593080687,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.034622510274251304,
+        "robustness": 0.10918748924731674
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 20,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 3644.153884467692,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.03140417734781901,
+        "robustness": 0.12051533883950731
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 50,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 4840.480401106029,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.1652390162150065,
+        "robustness": 0.08240203924665711
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 50,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 5626.154599455309,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.17946831385294595,
+        "robustness": 0.12411193362295521
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 100,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 6840.4074261616215,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.6980762481689453,
+        "robustness": 0.22267641758865797
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 100,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 7868.424320460032,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.6782245635986328,
+        "robustness": 0.1607984783496623
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 200,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 11264.331898760829,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 2.295741558074951,
+        "robustness": 0.04090241076119128
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 200,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 11472.979696390677,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 2.3803019523620605,
+        "robustness": 0.10582429637406676
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 500,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 16389.214603583765,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 15.573517560958862,
+        "robustness": 0.0
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 500,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 17551.630370921433,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 16.468589544296265,
+        "robustness": 0.0
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 1000,
+      "type": "_single_depot_single_vehicule_sumDemands",
+      "metrics": {
+        "total_cost": 25840.72339718995,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 58.3644483089447,
+        "robustness": 0.0
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_cvrp/cvrp_",
+      "size": 1000,
+      "type": "_multi_depot",
+      "metrics": {
+        "total_cost": 25815.75387830344,
+        "waiting_time": 0.0,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 59.34118700027466,
+        "robustness": 0.0
+      },
+      "problem_type": "cvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 10,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 3931.5945182789296,
+        "waiting_time": 2434.847115442152,
+        "cvr": 3.3333333333333335,
+        "feasibility": 0.6666666666666666,
+        "runtime": 0.009405851364135742,
+        "robustness": 0.1557160888747086
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 10,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 3819.2109593144155,
+        "waiting_time": 3279.909205882617,
+        "cvr": 3.3333333333333335,
+        "feasibility": 0.6666666666666666,
+        "runtime": 0.009629090627034506,
+        "robustness": 0.12932766700260537
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 20,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 7714.242383093694,
+        "waiting_time": 6019.157288698123,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.03422069549560547,
+        "robustness": 0.17024191191017937
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 20,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 7749.4164843434555,
+        "waiting_time": 5873.334790936981,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.03407613436381022,
+        "robustness": 0.2022527914667888
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 50,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 13535.42841209424,
+        "waiting_time": 10614.991054100594,
+        "cvr": 0.0,
+        "feasibility": 1.0,
+        "runtime": 0.16690460840861002,
+        "robustness": 0.17322223978340912
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 50,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 13872.428023534318,
+        "waiting_time": 11202.463232860304,
+        "cvr": 0.7092198581560284,
+        "feasibility": 0.6666666666666666,
+        "runtime": 0.14355921745300293,
+        "robustness": 0.149844318301702
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 100,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 37800.17302267291,
+        "waiting_time": 16458.444662566584,
+        "cvr": 6.0,
+        "feasibility": 0.0,
+        "runtime": 0.6294287045796713,
+        "robustness": 0.30779675302548354
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 100,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 30389.460578179234,
+        "waiting_time": 18264.098012117996,
+        "cvr": 1.0309278350515463,
+        "feasibility": 0.3333333333333333,
+        "runtime": 0.6789596875508627,
+        "robustness": 0.27372582580132504
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 200,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 89937.22069194063,
+        "waiting_time": 18459.8974766341,
+        "cvr": 10.098522167487685,
+        "feasibility": 0.0,
+        "runtime": 2.5568203926086426,
+        "robustness": 0.5535054940883128
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 200,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 55401.82251405254,
+        "waiting_time": 25001.01363833956,
+        "cvr": 1.0,
+        "feasibility": 0.0,
+        "runtime": 2.3269782066345215,
+        "robustness": 0.19276879661265411
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 500,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 175711.06532768923,
+        "waiting_time": 38539.82135693138,
+        "cvr": 7.7227722772277225,
+        "feasibility": 0.0,
+        "runtime": 15.299327373504639,
+        "robustness": 0.0
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 500,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 118280.23109062934,
+        "waiting_time": 43309.91278908266,
+        "cvr": 2.2044088176352705,
+        "feasibility": 0.0,
+        "runtime": 14.781533479690552,
+        "robustness": 0.0
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 1000,
+      "type": "_depots_equal_city",
+      "metrics": {
+        "total_cost": 244999.02875175362,
+        "waiting_time": 74359.42653993868,
+        "cvr": 6.138613861386139,
+        "feasibility": 0.0,
+        "runtime": 70.93258357048035,
+        "robustness": 0.0
+      },
+      "problem_type": "twcvrp"
+    },
+    {
+      "problem": "real_twcvrp/twvrp_",
+      "size": 1000,
+      "type": "_single_depot",
+      "metrics": {
+        "total_cost": 187332.21303510637,
+        "waiting_time": 71067.38996161749,
+        "cvr": 2.8368794326241136,
+        "feasibility": 0.0,
+        "runtime": 54.846837759017944,
+        "robustness": 0.0
+      },
+      "problem_type": "twcvrp"
+    }
+  ]
+}
