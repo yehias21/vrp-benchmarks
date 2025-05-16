@@ -43,16 +43,16 @@ def generate_cvrp_instance(
     return instance
 
 
-def get_num_vehicles(instance) -> int:
+def get_num_vehicles(instance, num_customers) -> int:
     """
     Compute the number of vehicles needed for the instance.
     A simple heuristic is to take the total customer demand, then divide by the vehicle's capacity.
     Here we ensure that we always have at least one vehicle.
     """
     total_demand = np.sum(instance["demands"])
-    vehicle_capacity = instance["vehicle_capacity"]
     # Calculate the minimum vehicles needed (rounding up)
-    num_vehicles = max(1, int(np.ceil(total_demand / vehicle_capacity)))
+    num_vehicles = max(1, int(np.ceil(total_demand / (2*
+                                                      CAPACITIES[num_customers]))))
     return num_vehicles
 
 
@@ -88,13 +88,13 @@ def generate_cvrp_dataset(
         )
 
         # Dynamic number of vehicles computed via a capacity-based heuristic:
-        num_vehicles = 1 #get_num_vehicles(instance)
+        num_vehicles = get_num_vehicles(instance, num_customers)
 
         dataset["locations"].append(instance["locations"].astype(precision))
         dataset["demands"].append(instance["demands"].astype(precision))
         # Allocate the full capacity for each computed vehicle
         # dataset["vehicle_capacities"].append([instance["vehicle_capacity"]]) # * num_vehicles)
-        dataset["vehicle_capacities"].append([CAPACITIES[num_customers]] )
+        dataset["vehicle_capacities"].append([2*CAPACITIES[num_customers]] )
         dataset["appear_times"].append(instance["appear_time"])
         dataset["num_vehicles"].append(num_vehicles)
 
@@ -107,8 +107,8 @@ def main():
     os.makedirs("../data/real_cvrp", exist_ok=True)
     for num_customers in tqdm(customer_counts):
         depots = max(1, num_customers // 50)
-        dataset = generate_cvrp_dataset(num_customers, num_depots=1)
-        save_dataset(dataset, f"../data/real_cvrp/cvrp_{num_customers}_single_depot_single_vehicule_capacities.npz")
+        dataset = generate_cvrp_dataset(num_customers, num_depots=depots)
+        save_dataset(dataset, f"../data/real_cvrp/cvrp_{num_customers}_multi_depot_multi_vehicule_capacities.npz")
 
 
 if __name__ == "__main__":

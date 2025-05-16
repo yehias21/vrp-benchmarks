@@ -186,7 +186,7 @@ def main():
                 pbar.update(1)
 
     avg_test_distance = sum(test_results) / len(test_results)
-    print(f"Average training distance: {avg_train_distance:.4f}")
+    print(f"Average rl_models distance: {avg_train_distance:.4f}")
     print(f"Average testing distance: {avg_test_distance:.4f}")
 
 

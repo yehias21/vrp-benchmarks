@@ -101,7 +101,7 @@ def get_distance_matrix(locations):
 def main():
     parser = ArgumentParser()
     parser.add_argument(
-        "--dataset_path", type=str, default="../data/real_cvrp/cvrp_1000.npz"
+        "--dataset_path", type=str, default="../data/real_cvrp/cvrp_10_single_depot_single_vehicule_capacities.npz"
     )
     parser.add_argument("--num_processes", "-n", type=int, default=2)
     args = parser.parse_args()
