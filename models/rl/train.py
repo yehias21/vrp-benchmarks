@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--algo", type=str, choices=["attention", "pomo"], required=True,
                         help="Which RL algorithm to use")
     parser.add_argument("--batch_size", type=int, required=True,
-                        help="Batch size for rl_models")
+                        help="Batch size for rl")
     parser.add_argument("--variant", type=str, choices=["cvrp", "twvrp"], required=True,
                         help="Problem variant to train: 'cvrp' or 'twvrp'")
     args = parser.parse_args()

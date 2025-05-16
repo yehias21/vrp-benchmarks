@@ -122,7 +122,7 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("--num_customers", type=int, default=10)
     parser.add_argument("--num_training_instances", type=int, default=5)
-    parser.add_argument("--num_realizations", type=int, default=3, help="Number of realizations per rl_models instance")
+    parser.add_argument("--num_realizations", type=int, default=3, help="Number of realizations per rl instance")
     parser.add_argument("--num_processes", "-n", type=int, default=2)
     args = parser.parse_args()
 
@@ -140,7 +140,7 @@ def main():
         }
         train_instances.append(instance)
 
-    # Parallel rl_models
+    # Parallel rl
     with mp.Pool(processes=args.num_processes) as pool:
         results = []
         with tqdm(total=args.num_training_instances) as pbar:
@@ -183,7 +183,7 @@ def main():
     avg_train_distance = sum(results) / len(results)
     avg_test_distance = sum(test_results) / len(test_results)
 
-    print(f"Average rl_models distance: {avg_train_distance:.4f}")
+    print(f"Average rl distance: {avg_train_distance:.4f}")
     print(f"Average test distance: {avg_test_distance:.4f}")
 
 if __name__ == "__main__":
