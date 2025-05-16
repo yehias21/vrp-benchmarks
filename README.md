@@ -82,12 +82,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 If you use this benchmark in your research, please cite:
 
 ```bibtex
-@misc{svrbench2024,
+@misc{svrbench2025,
   author = {Heakl, Ahmed and Shaaban, Yahia Salaheldin and Takáč, Martin and Lahlou, Salem and Iklassov, Zangir},
   title = {SVRPBench: A Benchmark for Stochastic Vehicle Routing Problems},
-  year = {2024},
+  year = {2025},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/ahmedheakl/vrp-benchmarks}}
+  howpublished = {\url{https://github.com/yehias21/vrp-benchmarks}}
 }
 ``` 
